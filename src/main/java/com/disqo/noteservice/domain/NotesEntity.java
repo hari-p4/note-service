@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -23,10 +25,19 @@ public class NotesEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
+    /**
+     * title cannot be blank and null with max size of note is 50 characters
+     */
     @NonNull
+    @NotBlank
+    @Size(max = 50)
     @Column(name = "title", nullable = false)
     private String title;
 
+    /**
+     * max size of note is 1000 characters
+     */
+    @Size(max = 1000)
     @Column(name = "note")
     private String note;
 
