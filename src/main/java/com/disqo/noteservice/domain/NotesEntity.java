@@ -1,14 +1,17 @@
 package com.disqo.noteservice.domain;
 
+import com.disqo.noteservice.dto.NotesResponseDto;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * @author Haridas Parekh
@@ -42,13 +45,28 @@ public class NotesEntity {
     private String note;
 
     @Column(name = "create_time")
-    private Date createTime;
+    @CreationTimestamp
+    private Timestamp createTime;
 
     @Column(name = "last_update_time")
-    private Date lastUpdateTime;
+    @UpdateTimestamp
+    private Timestamp lastUpdateTime;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
+    @Column(name = "user_id")
+    private Integer userId;
+
+    /**
+     * Construct a NotesResponseDto for this entity
+     *
+     * @return notesResponseDto for users
+     */
+    public NotesResponseDto toDto() {
+
+        NotesResponseDto notesResponseDto = new NotesResponseDto();
+        notesResponseDto.setNoteId(id);
+        notesResponseDto.setTitle(title);
+        return notesResponseDto;
+
+    }
 
 }

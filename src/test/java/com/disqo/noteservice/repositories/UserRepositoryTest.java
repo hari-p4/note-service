@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Data Jpa Test class for UserRepositoryTest testing validations.
+ *
  * @author Haridas Parekh
  */
 @RunWith(SpringRunner.class)
@@ -30,7 +31,7 @@ public class UserRepositoryTest {
     @Before
     public void setUp() {
         UserEntity userEntity = prepareUserEntity();
-        prepareNotesEntity(userEntity);
+        prepareNotesEntity();
     }
 
     @Test
@@ -73,11 +74,11 @@ public class UserRepositoryTest {
         userRepository.flush();
     }
 
-    private NotesEntity prepareNotesEntity(UserEntity userEntity) {
+    private NotesEntity prepareNotesEntity() {
         NotesEntity notesEntity = new NotesEntity();
         notesEntity.setTitle("myTitle");
         notesEntity.setNote("First test note");
-        notesEntity.setUserEntity(userEntity);
+        notesEntity.setUserId(2);
         return notesEntity;
     }
 
@@ -95,7 +96,7 @@ public class UserRepositoryTest {
         userEntity.setId(2);
         userEntity.setEmail("test@user.com");
         userEntity.setPassword("testPassword");
-        notesEntities.add(prepareNotesEntity(userEntity));
+        notesEntities.add(prepareNotesEntity());
         userEntity.setNotesEntities(notesEntities);
         return userEntity;
     }

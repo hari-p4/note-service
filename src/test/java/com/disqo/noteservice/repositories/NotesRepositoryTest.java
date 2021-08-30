@@ -15,6 +15,7 @@ import javax.validation.ConstraintViolationException;
 
 /**
  * Data Jpa Test class for NoteRepository testing basic CRUD ops with validations.
+ *
  * @author Haridas Parekh
  */
 @RunWith(SpringRunner.class)
@@ -33,7 +34,7 @@ public class NotesRepositoryTest {
     @Before
     public void setUp() {
         UserEntity userEntity = prepareUserEntity();
-        prepareNotesEntity(userEntity);
+        prepareNotesEntity();
     }
 
     @Test
@@ -90,11 +91,11 @@ public class NotesRepositoryTest {
         Assert.assertEquals(notesEntity.getTitle(), noteByTitle.getTitle());
     }
 
-    private void prepareNotesEntity(UserEntity userEntity) {
+    private void prepareNotesEntity() {
         notesEntity = new NotesEntity();
         notesEntity.setTitle("myTitle");
         notesEntity.setNote("First test note");
-        notesEntity.setUserEntity(userEntity);
+        notesEntity.setUserId(prepareUserEntity().getId());
     }
 
     private UserEntity prepareUserEntity() {

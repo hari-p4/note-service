@@ -1,7 +1,7 @@
 package com.disqo.noteservice.auth;
 
-import com.disqo.noteservice.jwt.JwtUtils;
 import com.disqo.noteservice.service.UserAuthService;
+import com.disqo.noteservice.utils.JwtUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.NonNull;
 import lombok.extern.apachecommons.CommonsLog;

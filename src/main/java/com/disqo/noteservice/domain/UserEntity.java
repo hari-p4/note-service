@@ -4,11 +4,14 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,12 +49,15 @@ public class UserEntity {
     private String password;
 
     @Column(name = "create_time")
-    private Date createTime;
+    @CreationTimestamp
+    private Timestamp createTime;
 
     @Column(name = "last_update_time")
-    private Date lastUpdateTime;
+    @UpdateTimestamp
+    private Timestamp lastUpdateTime;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "notes_user_id_fkey"))
     private List<NotesEntity> notesEntities = new ArrayList<>();
 
 }

@@ -1,4 +1,4 @@
-package com.disqo.noteservice.jwt;
+package com.disqo.noteservice.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
