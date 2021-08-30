@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Haridas Parekh
  * Data Jpa Test class for UserRepositoryTest testing validations.
+ * @author Haridas Parekh
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest

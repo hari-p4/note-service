@@ -14,8 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.validation.ConstraintViolationException;
 
 /**
- * @author Haridas Parekh
  * Data Jpa Test class for NoteRepository testing basic CRUD ops with validations.
+ * @author Haridas Parekh
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest

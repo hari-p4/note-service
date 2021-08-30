@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
+ * Repository interface for NotesEntity which allows finding by Title
  * @author Haridas Parekh
- * Repository interface for NotesEntity which allowes finding by Title
  */
 @Repository
 public interface NotesRepository extends JpaRepository<NotesEntity, Integer> {
