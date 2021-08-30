@@ -14,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +34,8 @@ public class NotesService {
     UserRepository userRepository;
 
     private static final String SUCCESS_MESSAGE = "Note saved/updated successfully";
+    private static final String DELETE_SUCCESS_MESSAGE = "Note successfully deleted";
+    private static final String DELETE_FAILURE_MESSAGE = "Could not find a Note / User not allowed to delete";
 
     /**
      * Add or Update note based on user
@@ -67,6 +70,24 @@ public class NotesService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Delete not by given Id once it was found from db and
+     * it's userId matches with current logged in userId and return error message otherwise
+     *
+     * @param noteId id given by user
+     * @param user   current logged in user
+     * @return
+     */
+    public NotesResponseDto deleteNoteById(Integer noteId, User user) {
+        Optional<NotesEntity> noteForDelete = notesRepository.findById(noteId);
+        if (noteForDelete.isPresent() && noteForDelete.get().getUserId().equals(getCurrentLoggedInUserId(user))) {
+            notesRepository.delete(noteForDelete.get());
+            return generateNotesResponseDto(noteId, DELETE_SUCCESS_MESSAGE, true);
+        } else {
+            return generateNotesResponseDto(noteId, DELETE_FAILURE_MESSAGE, false);
+        }
+    }
+
     private Integer getCurrentLoggedInUserId(User user) {
         return userRepository.findByEmail(user.getUsername()).getId();
     }
@@ -80,5 +101,12 @@ public class NotesService {
 
     private NotesEntity getNote(NotesRequestDto noteRequest) {
         return notesRepository.findByTitle(noteRequest.getTitle());
+    }
+
+    private NotesResponseDto generateNotesResponseDto(Integer noteId, String message, boolean isSuccessful) {
+        if (isSuccessful) {
+            return new NotesResponseDto(noteId, null, message, null);
+        }
+        return new NotesResponseDto(noteId, null, null, message);
     }
 }

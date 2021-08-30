@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,6 +34,9 @@ public class NotesServiceTest {
 
     @Mock
     UserRepository userRepository;
+
+    private static final String DELETE_SUCCESS_MESSAGE = "Note successfully deleted";
+    private static final String DELETE_FAILURE_MESSAGE = "Could not find a Note / User not allowed to delete";
 
     @Test
     public void testAddNote() {
@@ -68,9 +72,33 @@ public class NotesServiceTest {
 
     }
 
+    @Test
+    public void testDeleteNote() {
+        when(notesRepository.findById(anyInt())).thenReturn(Optional.of(prepareNotesEntity()));
+        when(userRepository.findByEmail(anyString())).thenReturn(prepareUserEntity());
+        NotesResponseDto notesResponseDto = notesService.deleteNoteById(prepareNotesEntity().getId(), prepareUser());
+        Assert.assertNotNull(notesResponseDto);
+        Assert.assertNull(notesResponseDto.getErrorMessage());
+        Assert.assertEquals(DELETE_SUCCESS_MESSAGE, notesResponseDto.getSuccessMessage());
+        verify(notesRepository, times(1)).delete(any(NotesEntity.class));
+    }
+
+    @Test
+    public void testUnAuthorizedDeleteNote() {
+        when(notesRepository.findById(anyInt())).thenReturn(Optional.of(prepareNotesEntity()));
+        UserEntity userEntity = prepareUserEntity();
+        userEntity.setId(1);
+        when(userRepository.findByEmail(anyString())).thenReturn(userEntity);
+        NotesResponseDto notesResponseDto = notesService.deleteNoteById(prepareNotesEntity().getId(), prepareUser());
+        Assert.assertNotNull(notesResponseDto);
+        Assert.assertNull(notesResponseDto.getSuccessMessage());
+        Assert.assertEquals(DELETE_FAILURE_MESSAGE, notesResponseDto.getErrorMessage());
+        verify(notesRepository, times(0)).delete(any(NotesEntity.class));
+    }
 
     private NotesEntity prepareNotesEntity() {
         NotesEntity notesEntity = new NotesEntity();
+        notesEntity.setId(2);
         notesEntity.setTitle("myTitle");
         notesEntity.setNote("First test note");
         notesEntity.setUserId(prepareUserEntity().getId());

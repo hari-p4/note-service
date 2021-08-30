@@ -30,7 +30,6 @@ public class NotesController {
     private static final String ERROR_MESSAGE = "Something went wrong while saving or update the Note!!";
 
     @PostMapping
-    @ResponseBody
     public NotesResponseDto createNote(@Valid @RequestBody NotesRequestDto noteRequest, BindingResult bindingResult, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         if (bindingResult.hasErrors()) {
@@ -43,5 +42,11 @@ public class NotesController {
     public List<AllNotesResponseDto> getNoteById(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return notesService.getUserNotes(user);
+    }
+
+    @DeleteMapping("/{noteId}")
+    public NotesResponseDto deleteNote(@PathVariable Integer noteId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return notesService.deleteNoteById(noteId, user);
     }
 }
