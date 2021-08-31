@@ -1,8 +1,8 @@
 package com.disqo.noteservice.controller;
 
-import com.disqo.noteservice.service.UserAuthService;
 import com.disqo.noteservice.dto.LogInRequest;
 import com.disqo.noteservice.dto.LogInResponse;
+import com.disqo.noteservice.service.UserAuthService;
 import com.disqo.noteservice.utils.JwtUtils;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;

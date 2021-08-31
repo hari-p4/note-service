@@ -13,10 +13,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -24,10 +26,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NotesServiceTest {
+public class NotesServiceImplTest {
 
     @InjectMocks
-    NotesService notesService;
+    NotesServiceImpl notesServiceImpl;
 
     @Mock
     NotesRepository notesRepository;
@@ -43,9 +45,9 @@ public class NotesServiceTest {
         when(notesRepository.findByTitle(anyString())).thenReturn(null);
         when(userRepository.findByEmail(anyString())).thenReturn(prepareUserEntity());
         when(notesRepository.save(any(NotesEntity.class))).thenReturn(prepareNotesEntity());
-        NotesResponseDto notesResponseDto = notesService.addOrUpdateNotes(prepareNoteRequest(), prepareUser());
-        Assert.assertNotNull(notesResponseDto);
-        Assert.assertEquals(prepareNotesEntity().getTitle(), notesResponseDto.getTitle());
+        ResponseEntity<NotesResponseDto> notesResponseEntity = notesServiceImpl.createNote(prepareNoteRequest(), prepareUser());
+        Assert.assertNotNull(notesResponseEntity);
+        Assert.assertEquals(prepareNotesEntity().getTitle(), Objects.requireNonNull(notesResponseEntity.getBody()).getTitle());
         verify(notesRepository, times(1)).save(any(NotesEntity.class));
     }
 
@@ -56,9 +58,9 @@ public class NotesServiceTest {
         NotesEntity updateNote = prepareNotesEntity();
         updateNote.setTitle("updatedTitle");
         when(notesRepository.save(any(NotesEntity.class))).thenReturn(updateNote);
-        NotesResponseDto notesResponseDto = notesService.addOrUpdateNotes(prepareNoteRequest(), prepareUser());
-        Assert.assertNotNull(notesResponseDto);
-        Assert.assertEquals(updateNote.getTitle(), notesResponseDto.getTitle());
+        ResponseEntity<NotesResponseDto> notesResponseEntity = notesServiceImpl.createNote(prepareNoteRequest(), prepareUser());
+        Assert.assertNotNull(notesResponseEntity);
+        Assert.assertEquals(updateNote.getTitle(), Objects.requireNonNull(notesResponseEntity.getBody()).getTitle());
         verify(notesRepository, times(1)).save(any(NotesEntity.class));
     }
 
@@ -66,9 +68,9 @@ public class NotesServiceTest {
     public void testGetAllNotes() {
         when(userRepository.findByEmail(anyString())).thenReturn(prepareUserEntity());
         when(notesRepository.findByUserId(anyInt())).thenReturn(prepareNoteEntities());
-        List<AllNotesResponseDto> allNotes = notesService.getUserNotes(prepareUser());
+        ResponseEntity<List<AllNotesResponseDto>> allNotes = notesServiceImpl.getAllNotes(prepareUser());
         Assert.assertNotNull(allNotes);
-        Assert.assertEquals(2, allNotes.size());
+        Assert.assertEquals(2, Objects.requireNonNull(allNotes.getBody()).size());
 
     }
 
@@ -76,10 +78,10 @@ public class NotesServiceTest {
     public void testDeleteNote() {
         when(notesRepository.findById(anyInt())).thenReturn(Optional.of(prepareNotesEntity()));
         when(userRepository.findByEmail(anyString())).thenReturn(prepareUserEntity());
-        NotesResponseDto notesResponseDto = notesService.deleteNoteById(prepareNotesEntity().getId(), prepareUser());
+        ResponseEntity<NotesResponseDto> notesResponseDto = notesServiceImpl.deleteNoteById(prepareNotesEntity().getId(), prepareUser());
         Assert.assertNotNull(notesResponseDto);
-        Assert.assertNull(notesResponseDto.getErrorMessage());
-        Assert.assertEquals(DELETE_SUCCESS_MESSAGE, notesResponseDto.getSuccessMessage());
+        Assert.assertNull(Objects.requireNonNull(notesResponseDto.getBody()).getErrorMessage());
+        Assert.assertEquals(DELETE_SUCCESS_MESSAGE, Objects.requireNonNull(notesResponseDto.getBody()).getSuccessMessage());
         verify(notesRepository, times(1)).delete(any(NotesEntity.class));
     }
 
@@ -89,10 +91,10 @@ public class NotesServiceTest {
         UserEntity userEntity = prepareUserEntity();
         userEntity.setId(1);
         when(userRepository.findByEmail(anyString())).thenReturn(userEntity);
-        NotesResponseDto notesResponseDto = notesService.deleteNoteById(prepareNotesEntity().getId(), prepareUser());
+        ResponseEntity<NotesResponseDto> notesResponseDto = notesServiceImpl.deleteNoteById(prepareNotesEntity().getId(), prepareUser());
         Assert.assertNotNull(notesResponseDto);
-        Assert.assertNull(notesResponseDto.getSuccessMessage());
-        Assert.assertEquals(DELETE_FAILURE_MESSAGE, notesResponseDto.getErrorMessage());
+        Assert.assertNull(Objects.requireNonNull(notesResponseDto.getBody()).getSuccessMessage());
+        Assert.assertEquals(DELETE_FAILURE_MESSAGE, Objects.requireNonNull(notesResponseDto.getBody()).getErrorMessage());
         verify(notesRepository, times(0)).delete(any(NotesEntity.class));
     }
 
@@ -120,10 +122,6 @@ public class NotesServiceTest {
         note.setTitle("UpdatedTitle");
         response.add(note);
         return response;
-    }
-
-    private NotesResponseDto prepareNoteResponse() {
-        return new NotesResponseDto(1, "dummyTitle", null, null);
     }
 
     private NotesRequestDto prepareNoteRequest() {

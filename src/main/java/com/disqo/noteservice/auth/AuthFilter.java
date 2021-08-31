@@ -1,6 +1,6 @@
 package com.disqo.noteservice.auth;
 
-import com.disqo.noteservice.service.UserAuthService;
+import com.disqo.noteservice.service.UserAuthServiceImpl;
 import com.disqo.noteservice.utils.JwtUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.NonNull;
@@ -24,7 +24,7 @@ import java.io.IOException;
 public class AuthFilter extends OncePerRequestFilter {
 
     @Autowired
-    UserAuthService userAuthService;
+    UserAuthServiceImpl userAuthServiceImpl;
 
     @Autowired
     JwtUtils jwtUtils;
@@ -52,7 +52,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.userAuthService.loadUserByUsername(email);
+            UserDetails userDetails = this.userAuthServiceImpl.loadUserByUsername(email);
 
             if (jwtUtils.validateToken(jwtToken, userDetails)) {
 

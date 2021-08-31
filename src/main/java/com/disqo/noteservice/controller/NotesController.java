@@ -6,6 +6,8 @@ import com.disqo.noteservice.dto.NotesResponseDto;
 import com.disqo.noteservice.service.NotesService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.BindingResult;
@@ -25,27 +27,27 @@ import java.util.List;
 public class NotesController {
 
     @Autowired
-    NotesService notesService;
+    private NotesService notesService;
 
     private static final String ERROR_MESSAGE = "Something went wrong while saving or update the Note!!";
 
     @PostMapping
-    public NotesResponseDto createNote(@Valid @RequestBody NotesRequestDto noteRequest, BindingResult bindingResult, Authentication authentication) {
+    public ResponseEntity<NotesResponseDto> createNote(@Valid @RequestBody NotesRequestDto noteRequest, BindingResult bindingResult, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         if (bindingResult.hasErrors()) {
-            return new NotesResponseDto(null, null, null, ERROR_MESSAGE);
+            return new ResponseEntity<>(new NotesResponseDto(null, null, null, ERROR_MESSAGE), HttpStatus.OK);
         }
-        return notesService.addOrUpdateNotes(noteRequest, user);
+        return notesService.createNote(noteRequest, user);
     }
 
     @GetMapping
-    public List<AllNotesResponseDto> getNoteById(Authentication authentication) {
+    public ResponseEntity<List<AllNotesResponseDto>> getAllNotes(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return notesService.getUserNotes(user);
+        return notesService.getAllNotes(user);
     }
 
     @DeleteMapping("/{noteId}")
-    public NotesResponseDto deleteNote(@PathVariable Integer noteId, Authentication authentication) {
+    public ResponseEntity<NotesResponseDto> deleteNote(@PathVariable Integer noteId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return notesService.deleteNoteById(noteId, user);
     }
